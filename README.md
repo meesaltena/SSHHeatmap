@@ -20,7 +20,7 @@ pip3 install folium numpy pandas requests
 
 Use wget (or curl, or git clone) to download the script.
 ```bash
-wget https://github.com/meesaltena/SSHHeatmap/blob/master/SSHHeatmap.py
+wget https://raw.githubusercontent.com/meesaltena/SSHHeatmap/master/SSHHeatmap.py
 ```
 
 Use grep tot generate a text file that contains the logging entries of failed ssh connection attempts.
