@@ -11,7 +11,7 @@ Generates a heatmap of IP's that made failed SSH login attempts on linux systems
 - requests
 
 ```bash
-pip install folium numpy pandas requests
+pip3 install folium numpy pandas requests
 ````
 
 
