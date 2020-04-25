@@ -5,9 +5,11 @@ import os
 import requests
 import folium
 from folium.plugins import HeatMap
-import numpy as np
-import pandas as pd
+import ipinfo
 import sys
+import time
+from collections import Counter
+import operator
 
 # Set a default api key here if you're not using sys arguments.
 api_key = ""
@@ -30,7 +32,7 @@ except IndexError:
 try:
     min_attempts = int(sys.argv[3])
 except IndexError:
-    min_attempts = 20
+    min_attempts = 30
     pass    
 
 # what filename the heatmap should be saved as.
@@ -40,11 +42,15 @@ except IndexError:
     heatmap_filename = 'heatmap.html'
     pass
 
+# create handler to interface with API
+ip_handler = ipinfo.getHandler(api_key)
+
 # read the file, split on newlines into array, return list of ips
 def read_file_get_ips(filename):
     with open(filename) as f:
         f_a = f.read().split('\n')
         # get array with only the ips 
+        # TODO: Use a regex to match and extract ips
         ips = [x[x.find('from ')+5:x.find(' port')] for x in f_a]
 
         # remove all empty strings, theres probably a better way to do this
@@ -54,37 +60,34 @@ def read_file_get_ips(filename):
         print('Read file ' + filename + ' and got ' + str(len(ips)) + ' login attempts.')
         return ips
 
-
-# make a dataframe with the count of login attempts per ip, return list
-# this can also be done with just numpy.
-def make_count_dataframe(ips):
-    ip_counts = pd.DataFrame(ips, columns=['ips'])['ips'].value_counts().reset_index().rename(columns={'index': 'ip', 'ips': 'count'})
-    # only get ips with more than x inlog attempts
-    ip_counts_trim = ip_counts[ip_counts['count'] > min_attempts]
-    print('No. of ips with at least ' + str(min_attempts) + ' login attempts: ' + str(len(ip_counts_trim)))
-    return list(ip_counts_trim['ip'])
+# Returns a list with the items in the passed list that occur at least min_attempts times.
+def get_applicable_ips(ips):
+    counts = Counter(ips).most_common()
+    meet_minimum = [x[0] for x in counts if x[1] > min_attempts]
+    print('No. of ips with at least ' + str(min_attempts) + ' login attempts: ' + str(len(meet_minimum)))
+    return meet_minimum
 
 # Call ipinfo api per api to get coordinates.
 def get_ip_coordinates(ips):
-    coords = []
+    
     print('Fetching coordinates...')
+    if(len(ips) > 500):
+        print("Fetching coordinates for > 500 IP's. Please consider using your own (free) ipinfo API key.")
 
-    for ip in ips:
-        url = 'https://ipinfo.io/' + ip + '/json?token=' + api_key
-        r = requests.get(url, headers={"content-type":"application/json"})
-
-        data = r.json()
-
-        if(data.get("error") is not None):
-            raise Exception('Received error response from api. Did you set or pass your api key correctly?')
-            
-        if(data.get("loc") is not None):
-            coords.append(data.get("loc").split(","))
-
-        if((ips.index(ip) % 10 == 0) and (ips.index(ip) != 0)):
-            print('Fetched ' + str(ips.index(ip)) + ' ips...')
-
-    print('Done fetching coordinates.')       
+    # split the list of ips into batches of 100 (or less, if the list is smaller)
+    batches = [ips[x:x+100] for x in range(0, len(ips), 100)]
+    coords = []
+    start = time.process_time()
+    for batch in batches:
+        # append /loc to each ip to get only the location info from the api
+        b = [x + "/loc" for x in batch]
+        # send the request to the api and get the values as a list
+        v = list(ip_handler.getBatchDetails(b).values())
+        # split the coords into a list with lat and lon if type is not dict, because the type of an error response is a dict
+        c = [x.split(',') for x in v if not isinstance(x, dict)]
+        coords.extend(c)
+        print("Fetched " + str(len(coords)) + "/" + str(len(ips)) + " coordinates in " + str(round(time.process_time() - start, 3)) + " seconds.")
+    
     return coords       
 
 def generate_and_save_heatmap(coords):        
@@ -93,12 +96,12 @@ def generate_and_save_heatmap(coords):
     # mess around with these values to change how the heatmap looks
     HeatMap(data = coords, radius=15, blur=20, max_zoom=2, max_val=2).add_to(m)
     m.save(heatmap_filename) 
-    print('Heatmap saved as ' + heatmap_filename)  
+    print('Done. heatmap saved as ' + heatmap_filename)  
     return
 
 def main():    
     ips = read_file_get_ips(filename)
-    ips_count = make_count_dataframe(ips)
+    ips_count = get_applicable_ips(ips)
     coords = get_ip_coordinates(ips_count)
     generate_and_save_heatmap(coords)
 
