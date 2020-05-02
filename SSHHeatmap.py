@@ -50,12 +50,14 @@ def read_file_get_ips(filename):
     with open(filename) as f:
         f_a = f.read().split('\n')
         # get array with only the ips 
-        # TODO: Use a regex to match and extract ips
-        ips = [x[x.find('from ')+5:x.find(' port')] for x in f_a]
-
-        # remove all empty strings, theres probably a better way to do this
-        while('' in ips):
-            ips.remove('')
+        # Use a regex to match and extract ips
+        p = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
+        ips=[]
+        for x in f_a:
+            match = p.search(x)
+            if match:
+                ip = match.group(0)
+                ips.append(ip)
         
         print('Read file ' + filename + ' and got ' + str(len(ips)) + ' login attempts.')
         return ips
