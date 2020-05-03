@@ -14,11 +14,11 @@ import operator
 # Set a default api key here if you're not using sys arguments.
 api_key = ""
 
-# Filename of the txt with the output of: grep "Failed password" /var/log/auth.log > filename.txt
+# Filename of the txt with the output of: grep "authentication failure\| Failed password" /var/log/auth.log > failed_attempts.txt
 try:
     filename = sys.argv[1]
 except IndexError:
-    filename = "failed_logins.txt"
+    filename = "failed_attempts.txt"
     pass
 
 # ipinfo.io api key

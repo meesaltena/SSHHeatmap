@@ -22,9 +22,9 @@ Use wget (or curl, or git clone) to download the script.
 wget https://raw.githubusercontent.com/meesaltena/SSHHeatmap/master/SSHHeatmap.py
 ```
 
-Use grep to generate a text file that contains the logging entries of failed ssh connection attempts.
+Use grep to generate a text file that contains the logging entries of failed ssh connection attempts. Pattern matches login attempts with a password as well as an ssh key. 
 ```bash
-grep "Failed password" /var/log/auth.log > failed_attempts.txt
+grep "authentication failure\| Failed password" /var/log/auth.log > failed_attempts.txt
 ```
 Get a free [ipinfo](https://ipinfo.io/) api key.
 
