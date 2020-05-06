@@ -18,6 +18,10 @@ api_key = ""
 try:
     filename = sys.argv[1]
 except IndexError:
+    if(api_key == ""):
+        print("Usage: SSHHeatmap.py <source_filename> <api key> <attempts_threshold> <heatmap_filename>")
+        print("To run SSHHeatmap without arguments, manually set an api key.")
+        quit()
     filename = "failed_attempts.txt"
     pass
 
@@ -74,7 +78,7 @@ def get_ip_coordinates(ips):
     
     print('Fetching coordinates...')
     if(len(ips) > 500):
-        print("Fetching coordinates for > 500 IP's. Please consider using your own (free) ipinfo API key.")
+        print("Fetching coordinates for > 500 IP's. Please consider using your own (free) ipinfo API key if you are not already.")
 
     # split the list of ips into batches of 100 (or less, if the list is smaller)
     batches = [ips[x:x+100] for x in range(0, len(ips), 100)]
