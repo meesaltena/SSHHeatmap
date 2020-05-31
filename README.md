@@ -26,6 +26,10 @@ Use grep to generate a text file that contains the logging entries of failed ssh
 ```bash
 grep "authentication failure\| Failed password" /var/log/auth.log > failed_attempts.txt
 ```
+Or use /var/log/secure if /var/log/auth.log don't exist
+```bash
+grep "authentication failure\| Failed password" /var/log/secure > failed_attempts.txt
+```
 Get a free [ipinfo](https://ipinfo.io/) api key.
 
 Run the script, passing the required arguments.
