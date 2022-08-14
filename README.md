@@ -46,5 +46,11 @@ python3 SSHHeatmap.py <sourcefile> <api key> <min_attempts> <heatmap_filename>
 Open the generated heatmap HTML file in a browser.
 
 
+## Possible improvements
+
+- implement proper argument parsing with ```argparse``` instead of using the sys.argv[] list
+- use local geoip database for location lookup instead of ipinfo api call 
+- add legend to folium map
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
