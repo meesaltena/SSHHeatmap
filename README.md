@@ -10,9 +10,8 @@ Generates a heatmap of IPs that made failed SSH login attempts on linux systems,
 - requests
 
 ```bash
-pip3 install folium requests ipinfo
+pip install -r requirements.txt
 ````
-
 
 
 ## Installation & Usage
@@ -32,18 +31,30 @@ grep "authentication failure\| Failed password" /var/log/secure > failed_attempt
 ```
 Get a free [ipinfo](https://ipinfo.io/) api key.
 
-Run the script, passing the required arguments.
-```bash
-python3 SSHHeatmap.py failed_attempts.txt <ipinfo_api_key>
-```
-
-You can pass additional arguments to set the minimum number of login attempts required for the IP address to be included in the heatmap, and the file name to use for the heatmap. 
+Run the script, passing the required ipinfo api key. You can run it without arguments buy setting the key manually.
 
 ```bash
-python3 SSHHeatmap.py <sourcefile> <api key> <min_attempts> <heatmap_filename>
+python SSHHeatmap.py -k API_KEY
 ```
+
+You can pass the following optional arguments:
+
+```bash
+python SSHHeatmap.py [-h] [-i INPUT] [-t THRESHOLD] [-o OUTPUT] -k API_KEY
+```
+ 
+- -i INPUT, --input INPUT: 
+  - Input filepath of: grep "authentication failure\| Failed password" /var/log/auth.log > [filename] (default: failed_attempts.txt)
+- -t THRESHOLD, --threshold THRESHOLD:
+  - Minimum number of attempts before an ip is included in the heatmap (default: 50)
+- -o OUTPUT, --output OUTPUT:
+  - Filename of the heatmap output (default: heatmap.html)
 
 Open the generated heatmap HTML file in a browser.
+
+## Possible improvements
+- use local geoip database for location lookup instead of ipinfo api call
+- add legend to folium map
 
 
 ## Possible improvements
