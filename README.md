@@ -56,12 +56,5 @@ Open the generated heatmap HTML file in a browser.
 - use local geoip database for location lookup instead of ipinfo api call
 - add legend to folium map
 
-
-## Possible improvements
-
-- implement proper argument parsing with ```argparse``` instead of using the sys.argv[] list
-- use local geoip database for location lookup instead of ipinfo api call 
-- add legend to folium map
-
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
