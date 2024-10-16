@@ -14,7 +14,7 @@ and opens your webbrowser with the heatmap generated from
 `/var/log/auth.log*`.
 
 ## Dependencies
-- Python >3.5
+- Python >3.11
 - folium
 - ipinfo
 - requests
