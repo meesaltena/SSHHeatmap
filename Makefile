@@ -4,7 +4,7 @@ view: heatmap.html
 	python -m webbrowser $<
 
 heatmap.html: failed_attempts.txt
-	pipenv run SSHHeatmap $< "$$IPINFO_TOKEN"
+	pipenv run SSHHeatmap -i $< -k "$$IPINFO_TOKEN"
 
 failed_attempts.txt:
 	zgrep "authentication failure\| Failed password" /var/log/auth.log* > $@
